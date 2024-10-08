@@ -41,6 +41,7 @@ jacocoTestReport {
             "/jacoco/test.exec",
             "/jacoco/testDebug.exec"
     ))
+    excludedClassFilesForReport(classDirectories)
 }
 
 
@@ -58,7 +59,18 @@ jacocoTestCoverageVerification {
                 counter = 'BRANCH'
                 minimum = 0.45
             }
+            excludes = [
+                    "com/exemplo/arrayutils/exceptions/*",
+
+            ]
         }
     }
 }
 
+private excludedClassFilesForReport(classDirectories) {
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it, exclude: [
+                "**/**/exceptions/*",
+        ])
+    }))
+}

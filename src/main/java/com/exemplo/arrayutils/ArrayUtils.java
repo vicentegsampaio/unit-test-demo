@@ -1,5 +1,7 @@
 package com.exemplo.arrayutils;
 
+import java.util.Arrays;
+
 public class ArrayUtils {
 
     public int sum(int[] array) {
@@ -36,5 +38,19 @@ public class ArrayUtils {
         }
         int sum = sum(array);
         return (double) sum / (array.length + 1);
+    }
+
+    public double calculateMedian(int[] array) {
+        if (array.length == 0) {
+            throw new IllegalArgumentException("Can't calculate an empty array median");
+        }
+        int[] sorted = array.clone();
+        Arrays.sort(sorted);
+        int middle = sorted.length / 2;
+        if (sorted.length % 2 == 0) {
+            return (sorted[middle - 1] + sorted[middle]) / 2.0;
+        } else {
+            return sorted[middle];
+        }
     }
 }

@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'jacoco' // Adiciona o plugin JaCoCo
+    id 'jacoco'
 }
 
 group 'com.exemplo'
@@ -11,12 +11,13 @@ repositories {
 }
 
 dependencies {
-    // Dependência do JUnit 5
+
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
 }
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport, jacocoTestCoverageVerification
 }
 
 jacocoTestReport {
@@ -28,17 +29,36 @@ jacocoTestReport {
         html.required.set(true)
     }
 
-    // Configuração para incluir as classes do código principal
-    classDirectories.setFrom(
-            fileTree(dir: "${buildDir}/classes/java/main") {
-                exclude '**/excluded_package/**' // Exclua pacotes ou classes, se necessário
-            }
-    )
 
-    sourceDirectories.setFrom(files('src/main/java'))
-    executionData.setFrom(fileTree(dir: "$buildDir", includes: [
-            'jacoco/test.exec',
-            'jacoco.exec'
+    classDirectories.setFrom(files([
+            "build/classes/java/main"
     ]))
+
+    sourceDirectories.setFrom(files([
+            "src/main/java"
+    ]))
+    executionData.setFrom(fileTree(buildDir).include(
+            "/jacoco/test.exec",
+            "/jacoco/testDebug.exec"
+    ))
+}
+
+
+jacocoTestCoverageVerification {
+    dependsOn test
+    executionData(fileTree(project.layout.buildDirectory).include("jacoco/*.exec"))
+    violationRules {
+        rule {
+            failOnViolation = true
+            limit {
+                counter = 'LINE'
+                minimum = 0.50
+            }
+            limit {
+                counter = 'BRANCH'
+                minimum = 0.45
+            }
+        }
+    }
 }
 
